@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -22,6 +22,7 @@ export function ResourceModal({ children }: ResourceModalProps) {
   const [open, setOpen] = useState(false);
   const [description, setDescription] = useState("");
   const [resourceType, setResourceType] = useState<ResourceType | "">("");
+  const [url, setUrl] = useState("");
 
   const handleSubmit = () => {
     if (description && resourceType) {
@@ -66,6 +67,8 @@ export function ResourceModal({ children }: ResourceModalProps) {
             <SelectContentComponent
               resourceType={resourceType}
               setResourceType={setResourceType}
+              url={url}
+              setUrl={setUrl}
             />
           </div>
         </div>

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Select,
   SelectContent,
@@ -5,15 +7,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 export type ResourceType = "file" | "url" | "audio";
 
 const SelectContentComponent = ({
   resourceType,
   setResourceType,
+  url,
+  setUrl,
 }: {
   resourceType: ResourceType | "";
   setResourceType: (value: ResourceType) => void;
+  url: string;
+  setUrl: (value: string) => void;
 }) => {
   return (
     <Select
@@ -28,6 +35,14 @@ const SelectContentComponent = ({
         <SelectItem value="url">URL</SelectItem>
         <SelectItem value="audio">Audio</SelectItem>
       </SelectContent>
+      {resourceType === "url" && (
+        <Input
+          type="url"
+          placeholder="Enter URL"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+        />
+      )}
     </Select>
   );
 };
