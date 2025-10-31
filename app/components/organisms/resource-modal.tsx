@@ -15,25 +15,45 @@ import { Textarea } from "@/components/ui/textarea";
 
 interface ResourceModalProps {
   children: React.ReactNode;
+  onAppend: (resource: { description: string; type: "file" | "url" | "audio"; url: string }) => void;
 }
 
-export function ResourceModal({ children }: ResourceModalProps) {
+export function ResourceModal({ children, onAppend }: ResourceModalProps) {
   const [open, setOpen] = useState(false);
   const [description, setDescription] = useState("");
   const [resourceType, setResourceType] = useState<ResourceType | "">("");
   const [url, setUrl] = useState("");
 
   const handleSubmit = () => {
-    if (description && resourceType) {
-      console.log("Resource added:", {
-        description,
-        type: resourceType,
-      });
-      // Reset form
-      setDescription("");
-      setResourceType("");
-      setOpen(false);
+    // Validation
+    if (description.length < 5) {
+      alert("Resource description must be at least 5 characters");
+      return;
     }
+    if (!resourceType) {
+      alert("Please select a resource type");
+      return;
+    }
+    if (!url.trim()) {
+      alert("URL or file path is required");
+      return;
+    }
+
+    const newResource = {
+      description,
+      type: resourceType as "file" | "url" | "audio",
+      url: url || "",
+    };
+
+    onAppend(newResource);
+
+    console.log("Resource added:", newResource);
+
+    // Reset form
+    setDescription("");
+    setResourceType("");
+    setUrl("");
+    setOpen(false);
   };
 
   useEffect(() => {
@@ -75,7 +95,7 @@ export function ResourceModal({ children }: ResourceModalProps) {
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={!description || !resourceType}
+            disabled={!description || !resourceType || !url.trim() || description.length < 5}
           >
             Add Resource
           </Button>

@@ -1,6 +1,11 @@
 "use client";
 
-import { useForm, SubmitHandler } from "react-hook-form";
+import {
+  useForm,
+  SubmitHandler,
+  UseFormReturn,
+  useFieldArray,
+} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Form } from "@/components/ui/form";
@@ -17,16 +22,22 @@ const formSchema = z.object({
     .max(500, {
       message: "Learning goals must not exceed 500 characters.",
     }),
-  resources: z.array(
-    z.object({
-      description: z.string(),
-      type: z.string(),
-      url: z.string(),
-    })
-  ),
+  resources: z
+    .array(
+      z.object({
+        description: z
+          .string()
+          .min(5, "Resource description must be at least 5 characters"),
+        type: z.enum(["url", "file", "audio"], {
+          message: "Please select a resource type",
+        }),
+        url: z.string().min(1, "URL or file path is required"),
+      })
+    )
+    .optional(),
 });
 
-type FormData = z.infer<typeof formSchema>;
+export type FormData = z.infer<typeof formSchema>;
 
 interface LearningGoalsFormProps {
   onSubmit?: (data: FormData) => void;
@@ -37,11 +48,15 @@ export function LearningGoalsForm({ onSubmit }: LearningGoalsFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       learningGoals: "",
+      resources: [],
     },
   });
 
   const handleSubmit: SubmitHandler<FormData> = (data) => {
-    console.log("Learning goals submitted:", data.learningGoals);
+    console.log("Form submitted:", {
+      learningGoals: data.learningGoals,
+      resources: data.resources || [],
+    });
     onSubmit?.(data);
   };
 
@@ -49,7 +64,7 @@ export function LearningGoalsForm({ onSubmit }: LearningGoalsFormProps) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <LearningGoalsSection form={form} />
-        <ResourceSection />
+        <ResourceSection form={form} />
         <Button>Submit Goals</Button>
       </form>
     </Form>
