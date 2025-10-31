@@ -10,9 +10,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { FormField, ResourceTypeSelector, ResourceType } from "../molecules";
 import { Textarea } from "@/components/ui/textarea";
-import SelectContentComponent from "./SelectContent";
-import { ResourceType } from "./SelectContent";
 
 interface ResourceModalProps {
   children: React.ReactNode;
@@ -37,6 +36,10 @@ export function ResourceModal({ children }: ResourceModalProps) {
     }
   };
 
+  useEffect(() => {
+    console.log("Resource type changed:", resourceType);
+  }, [resourceType]);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -48,10 +51,7 @@ export function ResourceModal({ children }: ResourceModalProps) {
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <label htmlFor="description" className="text-sm font-medium">
-              Description
-            </label>
+          <FormField id="description" label="Description">
             <Textarea
               id="description"
               placeholder="Describe the resource..."
@@ -59,18 +59,15 @@ export function ResourceModal({ children }: ResourceModalProps) {
               onChange={(e) => setDescription(e.target.value)}
               className="min-h-[100px] resize-none"
             />
-          </div>
-          <div className="grid gap-2">
-            <label htmlFor="resource-type" className="text-sm font-medium">
-              Resource Type
-            </label>
-            <SelectContentComponent
+          </FormField>
+          <FormField id="resource-type" label="Resource Type">
+            <ResourceTypeSelector
               resourceType={resourceType}
               setResourceType={setResourceType}
               url={url}
               setUrl={setUrl}
             />
-          </div>
+          </FormField>
         </div>
         <div className="flex justify-end gap-2">
           <Button variant="outline" onClick={() => setOpen(false)}>
