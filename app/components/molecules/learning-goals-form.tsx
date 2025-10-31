@@ -1,17 +1,14 @@
 "use client";
 
-import {
-  useForm,
-  SubmitHandler,
-  UseFormReturn,
-  useFieldArray,
-} from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { ResourceSection } from "..";
 import LearningGoalsSection from "./learning-goals-section";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   learningGoals: z
@@ -39,11 +36,7 @@ const formSchema = z.object({
 
 export type FormData = z.infer<typeof formSchema>;
 
-interface LearningGoalsFormProps {
-  onSubmit?: (data: FormData) => void;
-}
-
-export function LearningGoalsForm({ onSubmit }: LearningGoalsFormProps) {
+export function LearningGoalsForm() {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,12 +45,34 @@ export function LearningGoalsForm({ onSubmit }: LearningGoalsFormProps) {
     },
   });
 
+  const mutation = useMutation({
+    mutationFn: async (data: FormData) => {
+      const response = await fetch("/api/lesson", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit lesson");
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      toast.success("Lesson submitted successfully!");
+      form.reset(); // Clear form after successful submission
+      // You could show a success toast/message here
+    },
+    onError: (error) => {
+      toast.error(`Failed to submit lesson: ${error.message}`);
+      // You could show an error toast/message here
+    },
+  });
+
   const handleSubmit: SubmitHandler<FormData> = (data) => {
-    console.log("Form submitted:", {
-      learningGoals: data.learningGoals,
-      resources: data.resources || [],
-    });
-    onSubmit?.(data);
+    // React Hook Form validates the data, then we pass it to the mutation
+    mutation.mutate(data);
   };
 
   return (
@@ -65,7 +80,9 @@ export function LearningGoalsForm({ onSubmit }: LearningGoalsFormProps) {
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <LearningGoalsSection form={form} />
         <ResourceSection form={form} />
-        <Button>Submit Goals</Button>
+        <Button type="submit" disabled={mutation.isPending}>
+          {mutation.isPending ? "Submitting..." : "Submit Goals"}
+        </Button>
       </form>
     </Form>
   );
