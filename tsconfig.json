@@ -21,7 +21,9 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "@/customcomponents/*": ["./app/components/*"]
+      "@/customcomponents/*": ["./app/components/*"],
+      "@/types/*": ["./app/types/*"],
+      "@/services/*": ["./app/services/*"]
     }
   },
   "include": [
