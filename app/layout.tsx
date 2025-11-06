@@ -4,6 +4,8 @@ import "./globals.css";
 import { Providers } from "./QueryClientProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
+import ConvexClientProvider from "./ConvexClientProvider";
+import Header from "./components/molecules/header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,12 +31,15 @@ export default function RootLayout({
     <html lang="en">
       <Providers>
         <ClerkProvider>
-          <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-          >
-            {children}
-            <Toaster />
-          </body>
+          <ConvexClientProvider>
+            <body
+              className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+            >
+              <Header />
+              {children}
+              <Toaster />
+            </body>
+          </ConvexClientProvider>
         </ClerkProvider>
       </Providers>
     </html>

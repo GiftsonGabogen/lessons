@@ -23,7 +23,8 @@
       "@/*": ["./*"],
       "@/customcomponents/*": ["./app/components/*"],
       "@/types/*": ["./app/types/*"],
-      "@/services/*": ["./app/services/*"]
+      "@/services/*": ["./app/services/*"],
+      "@/convex/*": ["./convex/*"]
     }
   },
   "include": [
