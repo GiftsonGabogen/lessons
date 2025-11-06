@@ -2,31 +2,35 @@
 
 import { api } from "@/convex/_generated/api";
 import { useMutation } from "convex/react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-//TODO: use tanstack for loading states if possible
-
 const Onboarding = () => {
-  const [showWelcome, setShowWelcome] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const router = useRouter();
   const signInCreateAccount = useMutation(api.account.signInCreateAccount);
+  const [state, setState] = useState<"loading" | "error" | "success">(
+    "loading"
+  );
+  const [data, setData] = useState<any>(null);
 
   useEffect(() => {
-    const run = async () => {
-      const data = await signInCreateAccount();
-      setShowWelcome(data.new);
-      setUser(data.user);
-    };
-    run();
-  }, [signInCreateAccount]);
+    signInCreateAccount()
+      .then((result) => {
+        setData(result);
+        setState("success");
+        setTimeout(() => router.push("/dashboard"), 4000);
+      })
+      .catch(() => setState("error"));
+  }, []);
+
+  if (state === "loading") return <div>Loading...</div>;
+  if (state === "error") return <div>Error</div>;
 
   return (
-    <div className="mx-auto max-w-3xl">
-      {showWelcome ? (
-        <div>Welcome new user {user?.name}</div>
-      ) : (
-        <div>Welcome back {user?.name}</div>
-      )}
+    <div>
+      {data?.new
+        ? `Welcome ${data?.user?.name}`
+        : `Welcome back ${data?.user?.name}`}
     </div>
   );
 };

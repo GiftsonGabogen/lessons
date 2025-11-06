@@ -1,4 +1,3 @@
-import { GenericMutationCtx } from "convex/server";
 import { mutation } from "./_generated/server";
 
 //TODO: if already exist, just redirect to the destinatio n, if newly created, create animation and welcome then redirect to destination
